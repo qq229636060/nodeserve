@@ -27,7 +27,6 @@ app.use((req,res_app,next) =>{
 
 //登录提交
 app.post('/login',(req, res_app) => {
-    console.log("a")
     console.log(req.query.useid)
     console.log(req.query.password)
     if(req.query.useid == '' || req.query.password == ''){
