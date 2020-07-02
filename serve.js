@@ -39,12 +39,11 @@ app.post('/login',(req, res_app) => {
             console.log('err:'+err)
             res_app.send(err)
         }else if(res.length == 0){
-            console.log('res:'+JSON.parse(JSON.stringify(res)))
             res_app.send(rdata(-1,JSON.parse(JSON.stringify(res)),'用户名或密码错误'));
         }else{
             let content ={name:req.query.useid}; // 要生成token的主题信息
             let token = jwt.sign(content, secretOrPrivateKey, {
-                expiresIn: 60*60*1  // 1小时过期
+                expiresIn: 60  // 1小时过期
             });
             JSON.parse(JSON.stringify(res))[0].tokens = token;
             var data = JSON.parse(JSON.stringify(res))[0];
@@ -66,7 +65,7 @@ var verToken = function (token) {
         var info = jwt.verify(token, secretOrPrivateKey ,(error, decoded) => {
             if (error) {
               console.log('error:'+error.message)
-              return
+              return res.send({ success: false, message: 'Failed to authenticate token.' });
             }
             console.log(decoded)
           });
