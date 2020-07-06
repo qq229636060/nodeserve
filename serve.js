@@ -12,14 +12,14 @@ app.use((req,res_app,next) =>{
         return next()
     }
     if(token == undefined){
-          res_app.send(rdata(-200,'','还未登录'));
+          res_app.send(rdata(-200,'','登录超时！请重新登录'));
           return false;
       }else{
           verToken(token).then((data)=> {
               req.data = data;
               return next();
           }).catch((error)=>{
-            　　　　res_app.send(rdata(-200,'','还未登录'));
+            　　　　res_app.send(rdata(-200,'','登录超时！请重新登录'));
                    return false;
           })
       }
@@ -43,7 +43,7 @@ app.post('/login',(req, res_app) => {
         }else{
             let content ={name:req.query.useid}; // 要生成token的主题信息
             let token = jwt.sign(content, secretOrPrivateKey, {
-                expiresIn: 60  // 1小时过期
+                expiresIn: 60*60  // 1小时过期
             });
             JSON.parse(JSON.stringify(res))[0].tokens = token;
             var data = JSON.parse(JSON.stringify(res))[0];
@@ -65,7 +65,7 @@ var verToken = function (token) {
         var info = jwt.verify(token, secretOrPrivateKey ,(error, decoded) => {
             if (error) {
               console.log('error:'+error.message)
-              return res.send({ success: false, message: 'Failed to authenticate token.' });
+              return res.send(rdata(-200,'',error.message));
             }
             console.log(decoded)
           });
