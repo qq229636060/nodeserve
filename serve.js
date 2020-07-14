@@ -16,6 +16,7 @@ app.use((req,res_app,next) =>{
           return false;
       }else{
           verToken(token).then((data)=> {
+              console.log(data)
               req.data = data;
               return next();
           }).catch((error)=>{
@@ -27,8 +28,8 @@ app.use((req,res_app,next) =>{
 
 //登录提交
 app.post('/login',(req, res_app) => {
-    console.log(req.query.useid)
-    console.log(req.query.password)
+    //console.log(req.query.useid)
+    //console.log(req.query.password)
     if(req.query.useid == '' || req.query.password == ''){
         res_app.send(rdata(-1,'','请填写用户名或密码'));
         return false
@@ -56,9 +57,14 @@ app.post('/login',(req, res_app) => {
     //connection.end();
 }) 
 app.post('/index',(req, res_app) => {
-    //console.log(req.headers['token'])
+    console.log(req.data)
     res_app.send("你好");
 })
+app.post('/user',(req, res_app) => {
+    console.log(req.data)
+    res_app.send(rdata(0,req.data,''));
+})
+
 
 var verToken = function (token) {
     return new Promise((resolve, reject) => {
@@ -66,8 +72,9 @@ var verToken = function (token) {
             if (error) {
               console.log('error:'+error.message)
               return res.send(rdata(-200,'',error.message));
+            }else{
+                return decoded
             }
-            console.log(decoded)
           });
         resolve(info);
     })
