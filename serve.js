@@ -60,11 +60,34 @@ app.post('/index',(req, res_app) => {
     console.log(req.data)
     res_app.send("你好");
 })
+
 app.post('/user',(req, res_app) => {
-    console.log(req.data)
+    //console.log(req.data)
     res_app.send(rdata(0,req.data,''));
 })
 
+app.post('/editpassword',(req,res_app)=>{
+    console.log('a'+req.data)
+    var sql_order = "select * from useinfo WHERE usename = " + req.data.name;
+    var sql_editpw = "UPDATE useinfo SET password='"+ req.query.npw +"' WHERE usename = "+ req.data.name
+    connection.query(sql_order,function(err,res,next){
+        if(err){
+            console.log(err)
+        }else{
+            if(req.query.opw == JSON.parse(JSON.stringify(res))[0].password){
+                connection.query(sql_editpw,function(err,res,next){
+                    if(err){
+                        res_app.send(err)
+                    }else{
+                        res_app.send(rdata(0,res,'修改密码成功'));
+                    }
+                })
+            }else{
+                res_app.send(rdata(-1,'','旧密码不正确')); 
+            }
+        }
+    })
+})
 
 var verToken = function (token) {
     return new Promise((resolve, reject) => {
