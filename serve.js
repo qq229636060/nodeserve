@@ -5,6 +5,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var connection = require("./sql.js");
 var rdata = require("./returndata.js");
 var jwt = require('jsonwebtoken')
+var request = require('request');
 let secretOrPrivateKey="jwt";// 这是加密的key（密钥）
 app.use((req,res_app,next) =>{
     var token = req.headers['token'];
@@ -25,6 +26,11 @@ app.use((req,res_app,next) =>{
           })
       }
 })
+// request('http://m21.filmfly.cn/c3/cinema/seats?planId=509816062', function (error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       console.log(body) // 请求成功的处理逻辑
+//     }
+//   });
 
 //登录提交
 app.post('/login',(req, res_app) => {
@@ -56,9 +62,18 @@ app.post('/login',(req, res_app) => {
     
     //connection.end();
 }) 
-app.post('/index',(req, res_app) => {
-    console.log(req.data)
-    res_app.send("你好");
+
+
+app.get('/index',(req, res_app) => {
+    var sql_order = "select * from content";
+    connection.query(sql_order,function(err,res,next){
+        if(err){
+            console.log(err)
+        }else{
+            res_app.send(rdata(0,res,""));
+        }
+    })
+    
 })
 
 app.post('/user',(req, res_app) => {
@@ -67,6 +82,7 @@ app.post('/user',(req, res_app) => {
 })
 
 app.post('/editpassword',(req,res_app)=>{
+    debugger;
     console.log('a'+req.data)
     var sql_order = "select * from useinfo WHERE usename = " + req.data.name;
     var sql_editpw = "UPDATE useinfo SET password='"+ req.query.npw +"' WHERE usename = "+ req.data.name
@@ -104,7 +120,7 @@ var verToken = function (token) {
 }
 
 
-var server = app.listen(8001, function () {
+var server = app.listen(8999, function () {
     console.log(server.address())
     console.log("应用实例，访问地址为")
 }) 
